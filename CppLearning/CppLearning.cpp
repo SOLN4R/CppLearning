@@ -1,113 +1,114 @@
 ﻿/*
  *	Objective:
- *	Learn how to work with multidimensional arrays and
- *	apply basic algorithms for processing them.
+ *	Learn how to create, fill, and process dynamic arrays
+ *	in C++ using memory allocation and deallocation.
  */
 
 #include <iostream>
 
-const int ROWS{ 3 }, COLUMNS{ 3 };
+ /*
+  * Sorts the array in ascending order using bubble sort.
+  *
+  * @param array Pointer to the array to be sorted.
+  * @param size The size of the array.
+  */
+void SortingArray(int* array, int size);
 
 /*
- * Calculates the sum of all elements in a 2D array.
+ * Calculates the sum of all elements in the array.
  *
- * @param array Pointer to a 2D array with fixed columns (COLUMNS).
- * @return The sum of all elements in the array as an integer.
+ * @param array Pointer to the array.
+ * @param size The size of the array.
+ * @return The sum of the elements as an integer.
  */
-int Addition(const int (*array)[COLUMNS]);
+int Addition(int const* array, int const size);
 
 /*
- * Finds the maximum value in a 2D array and its position.
+ * Finds the minimum and maximum values in the array.
  *
- * @param array Pointer to a 2D array with fixed columns (COLUMNS).
- * @param row Reference to an integer where the row index of the maximum value will be stored.
- * @param column Reference to an integer where the column index of the maximum value will be stored.
- * @return The maximum value in the array as an integer.
+ * @param array Pointer to the array.
+ * @param size The size of the array.
+ * @param min Reference to an integer where the minimum value will be stored.
+ * @param max Reference to an integer where the maximum value will be stored.
  */
-int FindMax(const int (*array)[COLUMNS], int& row, int& column);
+void FindMinMax(int const* array, int const size, int& min, int& max);
 
-/*
- * Calculates the average value of all elements in a 2D array.
- *
- * @param array Pointer to a 2D array with fixed columns (COLUMNS).
- * @return The average value of the elements as a double.
- */
-double Average(const int (*array)[COLUMNS]);
-
-
-void main()
+int main()
 {
+	int array_size{ 0 };
+	std::cout << "Enter the size of the array: ";
+	std::cin >> array_size;
+	std::cout << std::endl;
+
+	int* numbers{ new int[array_size] {} };
 	srand(static_cast<unsigned int>(time(0)));
-
-	int matrix[ROWS][COLUMNS] = {};
-
-	std::cout << "Matrix:" << std::endl;
-
-	for (int i = 0; i < ROWS; i++)
+	for (int i = 0; i < array_size; i++)
 	{
-		for (int j = 0; j < COLUMNS; j++)
-		{
-			matrix[i][j] = rand() % 50 + 1;
-			std::cout << matrix[i][j] << " ";
-		}
-		std::cout << std::endl;
+		numbers[i] = rand() % 100 + 1;
+	}
+
+	std::cout << "Original array: ";
+	for (int i = 0; i < array_size; i++)
+	{
+		std::cout << numbers[i] << " ";
+	}
+	
+	std::cout << std::endl;
+
+	SortingArray(numbers, array_size);
+	std::cout << "Sorted array: ";
+	for (int i = 0; i < array_size; i++)
+	{
+		std::cout << numbers[i] << " ";
 	}
 
 	std::cout << std::endl;
 
-	std::cout << "Sum of elements: " << Addition(matrix) << std::endl;
+	std::cout << "Sum of elements: " << Addition(numbers, array_size) << std::endl;
 
-	int max_value_row{}, max_value_column{};
-	std::cout << "Maximum value: " << FindMax(matrix, max_value_row, max_value_column)
-		<< " at position (" << max_value_row << ", " << max_value_column << ")" << std::endl;
+	int min{}, max{};
+	FindMinMax(numbers, array_size, min, max);
+	std::cout << "Minimum value: " << min << std::endl;
+	std::cout << "Maximum value: " << max << std::endl;
 
-	std::cout << "Average value: " << Average(matrix) << std::endl;
+	delete[] numbers;
+	numbers = nullptr;
+
+	return 0;
 }
 
-int Addition(const int (*array)[COLUMNS])
+void SortingArray(int* array, int size)
+{
+	for (int i = 0; i < size - 1; i++)
+	{
+		for (int j = 0; j < size - i - 1; j++)
+		{
+			if (array[j] > array[j + 1])
+			{
+				std::swap(array[j], array[j + 1]);
+			}
+		}
+	}
+}
+
+int Addition(int const* array, int const size)
 {
 	int result{ 0 };
-	for (int i = 0; i < ROWS; i++)
+	for (int i = 0; i < size; i++)
 	{
-		for (int j = 0; j < COLUMNS; j++)
-		{
-			result += array[i][j];
-		}
+		result += array[i];
 	}
 	return result;
 }
 
-int FindMax(const int (*array)[COLUMNS], int& row, int& column)
+void FindMinMax(int const* array, int const size, int& min, int& max)
 {
-	int max_value = array[0][0];
+	min = array[0];
+	max = array[0];
 
-	for (int i = 0; i < ROWS; i++)
+	for (int i = 0; i < size; i++)
 	{
-		for (int j = 0; j < COLUMNS; j++)
-		{
-			if (max_value < array[i][j])
-			{
-				max_value = array[i][j];
-				row = i;
-				column = j;
-			}
-		}
+		if (min > array[i]) min = array[i];
+		if (max < array[i]) max = array[i];
 	}
-
-	return max_value;
-}
-
-double Average(const int (*array)[COLUMNS])
-{
-	double result{};
-
-	for (int i = 0; i < ROWS; i++)
-	{
-		for (int j = 0; j < COLUMNS; j++)
-		{
-			result += array[i][j];
-		}
-	}
-
-	return result / (ROWS * COLUMNS);
 }
