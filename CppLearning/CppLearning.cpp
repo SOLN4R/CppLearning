@@ -1,72 +1,53 @@
 ﻿/*
 	Objective:
-	Learn how to use conditional constructions (if, else if, else)
-	and loops (for, while, do-while) to control program logic.
+	Learn how to create and use functions to solve problems and structure code.
 */
 
 #include <iostream>
 
+int Add(const int a, const int b); // Returns the sum of two numbers
+int Subtract(const int a, const int b); // Returns the difference between two numbers.
+bool IsEven(const int number); // Returns true if the number is even, and false otherwise.
+
 int main()
 {
-	int number{ 0 };
+	int first_number{0}, second_number{0};
 
-	// Determining the parity of a number
-	std::cout << "Determining the parity of a number" << std::endl;
-	std::cout << "Enter an integer: ";
-	std::cin >> number;
-	if (number > 0)
+	std::cout << "Enter the first number: ";
+	std::cin >> first_number;
+
+	std::cout << "Enter the second number: ";
+	std::cin >> second_number;
+
+	std::cout << std::endl;
+
+	std::cout << "Addition: " << Add(first_number, second_number) << std::endl;
+	std::cout << "Subtract: " << Subtract(first_number, second_number) << std::endl;
+
+	std::cout << "The number " << first_number << " is ";
+	if(IsEven(first_number))
 	{
-		std::cout << "The number is positive." << std::endl;
-	}
-	else if (number < 0)
-	{
-		std::cout << "The number is negative." << std::endl;
+		std::cout << "even." << std::endl;
 	}
 	else
 	{
-		std::cout << "The number is zero." << std::endl;
+		std::cout << "odd." << std::endl;
 	}
-
-	std::cout << std::endl;
-
-	// Output of numbers from 1 to N
-	std::cout << "Output of numbers from 1 to N" << std::endl;
-	std::cout << "Enter an integer for N: ";
-	std::cin >> number;
-	std::cout << "Numbers from 1 to N:";
-	for (int i = 1; i <= number; i++)
-	{
-		std::cout << " " << i;
-	}
-
-	std::cout << std::endl;
-	std::cout << std::endl;
-
-	// Output of even numbers from 1 to N
-	std::cout << "Output of even numbers from 1 to N" << std::endl;
-	std::cout << "Enter an integer for N: ";
-	std::cin >> number;
-	std::cout << "Even numbers from 1 to M:";
-	int even_candidate{ 0 };
-	while (++even_candidate <= number)
-	{
-		if (even_candidate % 2 == 0)
-		{
-			std::cout << " " << even_candidate;
-		}
-	}
-
-	std::cout << std::endl;
-	std::cout << std::endl;
-
-	// Entering a positive integer
-	std::cout << "Entering a positive integer" << std::endl;
-	do
-	{
-		std::cout << "Enter a positive integer: ";
-		std::cin >> number;
-	} while (number <= 0);
-	std::cout << "Thank you! The positive number is " << number << "." << std::endl;
 
 	return 0;
+}
+
+int Add(const int a, const int b)
+{
+	return a + b;
+}
+
+int Subtract(const int a, const int b)
+{
+	return a - b;
+}
+
+bool IsEven(const int number)
+{
+	return number % 2 == 0;
 }
