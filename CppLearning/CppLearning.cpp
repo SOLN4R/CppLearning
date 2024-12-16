@@ -1,114 +1,101 @@
 ﻿/*
  *	Objective:
- *	Learn how to create, fill, and process dynamic arrays
- *	in C++ using memory allocation and deallocation.
+ *	Learn how to create classes, work with objects,
+ *	and implement basic OOP concepts: encapsulation, 
+ *	constructors and methods.
  */
 
 #include <iostream>
 
- /*
-  * Sorts the array in ascending order using bubble sort.
-  *
-  * @param array Pointer to the array to be sorted.
-  * @param size The size of the array.
-  */
-void SortingArray(int* array, int size);
+class DynamicArray {
+private:
+	int* _array;
+	int _size;
+public:
+	DynamicArray() : _array(nullptr), _size(0) {}
+	DynamicArray(int size) : _array(new int[size]{}), _size(size) {}
+	~DynamicArray() {
+		delete[] _array;
+		_array = nullptr;
+	}
+	// Fills the array with random numbers in the range[min, max]
+	void FillRandom(int min, int max)
+	{
+		for (int i = 0; i < _size; i++)
+		{
+			_array[i] = rand() % (max - min + 1) + min;
+		}
+	}
+	// Outputs an array to the console
+	void Print(std::string message) const
+	{
+		std::cout << message << ": ";
+		for (int i = 0; i < _size; i++)
+		{
+			std::cout << _array[i] << " ";
+		}
+		std::cout << std::endl;
+	}
+	// Sorts the array in ascending order (bubble sort)
+	void BubbleSort()
+	{
+		for (int i = 0; i < _size - 1; i++)
+		{
+			bool is_sorted = true;
+			for (int j = 0; j < _size - i - 1; j++)
+			{
+				if (_array[j] > _array[j + 1])
+				{
+					std::swap(_array[j], _array[j + 1]);
+					is_sorted = false;
+				}
+			}
+			if (is_sorted) break;
+		}
+	}
+	// Returns the sum of all the elements of the array
+	int Sum() const
+	{
+		int result{ 0 };
+		for (int i = 0; i < _size; i++)
+		{
+			result += _array[i];
+		}
+		return result;
+	}
+	// Returns the minimum value of the array
+	int GetMin() const
+	{
+		int min{ _array[0] };
+		for (int i = 0; i < _size; i++)
+		{
+			if (min > _array[i]) min = _array[i];
+		}
+		return min;
+	}
+	// Returns the maximum value of the array
+	int GetMax() const
+	{
+		int max{ _array[0] };
+		for (int i = 0; i < _size; i++)
+		{
+			if (max < _array[i]) max = _array[i];
+		}
+		return max;
+	}
 
-/*
- * Calculates the sum of all elements in the array.
- *
- * @param array Pointer to the array.
- * @param size The size of the array.
- * @return The sum of the elements as an integer.
- */
-int Addition(int const* array, int const size);
-
-/*
- * Finds the minimum and maximum values in the array.
- *
- * @param array Pointer to the array.
- * @param size The size of the array.
- * @param min Reference to an integer where the minimum value will be stored.
- * @param max Reference to an integer where the maximum value will be stored.
- */
-void FindMinMax(int const* array, int const size, int& min, int& max);
+};
 
 int main()
 {
-	int array_size{ 0 };
-	std::cout << "Enter the size of the array: ";
-	std::cin >> array_size;
-	std::cout << std::endl;
-
-	int* numbers{ new int[array_size] {} };
 	srand(static_cast<unsigned int>(time(0)));
-	for (int i = 0; i < array_size; i++)
-	{
-		numbers[i] = rand() % 100 + 1;
-	}
-
-	std::cout << "Original array: ";
-	for (int i = 0; i < array_size; i++)
-	{
-		std::cout << numbers[i] << " ";
-	}
-	
-	std::cout << std::endl;
-
-	SortingArray(numbers, array_size);
-	std::cout << "Sorted array: ";
-	for (int i = 0; i < array_size; i++)
-	{
-		std::cout << numbers[i] << " ";
-	}
-
-	std::cout << std::endl;
-
-	std::cout << "Sum of elements: " << Addition(numbers, array_size) << std::endl;
-
-	int min{}, max{};
-	FindMinMax(numbers, array_size, min, max);
-	std::cout << "Minimum value: " << min << std::endl;
-	std::cout << "Maximum value: " << max << std::endl;
-
-	delete[] numbers;
-	numbers = nullptr;
-
+	DynamicArray dynamic_array(10);
+	dynamic_array.FillRandom(1, 100);
+	dynamic_array.Print("Array");
+	dynamic_array.BubbleSort();
+	dynamic_array.Print("Sorted array");
+	std::cout << "Sum of elements: " << dynamic_array.Sum() << std::endl;
+	std::cout << "Minimum value: " << dynamic_array.GetMin() << std::endl;
+	std::cout << "Maximum value: " << dynamic_array.GetMax() << std::endl;
 	return 0;
-}
-
-void SortingArray(int* array, int size)
-{
-	for (int i = 0; i < size - 1; i++)
-	{
-		for (int j = 0; j < size - i - 1; j++)
-		{
-			if (array[j] > array[j + 1])
-			{
-				std::swap(array[j], array[j + 1]);
-			}
-		}
-	}
-}
-
-int Addition(int const* array, int const size)
-{
-	int result{ 0 };
-	for (int i = 0; i < size; i++)
-	{
-		result += array[i];
-	}
-	return result;
-}
-
-void FindMinMax(int const* array, int const size, int& min, int& max)
-{
-	min = array[0];
-	max = array[0];
-
-	for (int i = 0; i < size; i++)
-	{
-		if (min > array[i]) min = array[i];
-		if (max < array[i]) max = array[i];
-	}
 }
