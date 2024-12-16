@@ -1,74 +1,113 @@
 ﻿/*
  *	Objective:
- *	Learn how to work with arrays and pass them to functions,
- *	as well as return results through parameters.
+ *	Learn how to work with multidimensional arrays and
+ *	apply basic algorithms for processing them.
  */
 
 #include <iostream>
 
-int const ARRAY_SIZE = 10;
+const int ROWS{ 3 }, COLUMNS{ 3 };
 
 /*
- * Calculates the average value of the elements in the array.
+ * Calculates the sum of all elements in a 2D array.
  *
- * @param arr Pointer to the beginning of the array.
- * @return The average value of the array elements as a double.
+ * @param array Pointer to a 2D array with fixed columns (COLUMNS).
+ * @return The sum of all elements in the array as an integer.
  */
-double Average(const int* arr);
-
+int Addition(const int (*array)[COLUMNS]);
 
 /*
- * Finds the minimum and maximum values in the array.
+ * Finds the maximum value in a 2D array and its position.
  *
- * @param array Reference to an array of fixed size (ARRAY_SIZE).
- * @param min Reference to an integer where the minimum value will be stored.
- * @param max Reference to an integer where the maximum value will be stored.
+ * @param array Pointer to a 2D array with fixed columns (COLUMNS).
+ * @param row Reference to an integer where the row index of the maximum value will be stored.
+ * @param column Reference to an integer where the column index of the maximum value will be stored.
+ * @return The maximum value in the array as an integer.
  */
-void FindMinMax(int(&array)[ARRAY_SIZE], int& min, int& max); // 
+int FindMax(const int (*array)[COLUMNS], int& row, int& column);
+
+/*
+ * Calculates the average value of all elements in a 2D array.
+ *
+ * @param array Pointer to a 2D array with fixed columns (COLUMNS).
+ * @return The average value of the elements as a double.
+ */
+double Average(const int (*array)[COLUMNS]);
+
 
 void main()
 {
-	int numbers[ARRAY_SIZE];
-	int min_value {};
-	int max_value {};
 	srand(static_cast<unsigned int>(time(0)));
 
-	std::cout << "Array:";
-	for (int i = 0; i < ARRAY_SIZE; i++)
+	int matrix[ROWS][COLUMNS] = {};
+
+	std::cout << "Matrix:" << std::endl;
+
+	for (int i = 0; i < ROWS; i++)
 	{
-		numbers[i] = rand() % 100 + 1;
-		std::cout << " " << numbers[i];
+		for (int j = 0; j < COLUMNS; j++)
+		{
+			matrix[i][j] = rand() % 50 + 1;
+			std::cout << matrix[i][j] << " ";
+		}
+		std::cout << std::endl;
 	}
 
 	std::cout << std::endl;
-	std::cout << std::endl;
 
-	FindMinMax(numbers, min_value, max_value);
-	std::cout << "Minimum value: " << min_value << std::endl;
-	std::cout << "Maximum value: " << max_value << std::endl;
-	std::cout << "Average value: " << Average(numbers) << std::endl;
+	std::cout << "Sum of elements: " << Addition(matrix) << std::endl;
+
+	int max_value_row{}, max_value_column{};
+	std::cout << "Maximum value: " << FindMax(matrix, max_value_row, max_value_column)
+		<< " at position (" << max_value_row << ", " << max_value_column << ")" << std::endl;
+
+	std::cout << "Average value: " << Average(matrix) << std::endl;
 }
 
-double Average(const int* array)
+int Addition(const int (*array)[COLUMNS])
 {
-	double result{ 0 };
-	for (int i = 0; i < ARRAY_SIZE; i++)
+	int result{ 0 };
+	for (int i = 0; i < ROWS; i++)
 	{
-		result += array[i];
+		for (int j = 0; j < COLUMNS; j++)
+		{
+			result += array[i][j];
+		}
 	}
-	result /= ARRAY_SIZE;
 	return result;
 }
 
-void FindMinMax(int(&array)[ARRAY_SIZE], int& min, int& max)
+int FindMax(const int (*array)[COLUMNS], int& row, int& column)
 {
-	min = array[0];
-	max = array[0];
+	int max_value = array[0][0];
 
-	for (int i = 1; i < ARRAY_SIZE; i++)
+	for (int i = 0; i < ROWS; i++)
 	{
-		if (min > array[i]) min = array[i];
-		if (max < array[i]) max = array[i];
+		for (int j = 0; j < COLUMNS; j++)
+		{
+			if (max_value < array[i][j])
+			{
+				max_value = array[i][j];
+				row = i;
+				column = j;
+			}
+		}
 	}
-	return;
+
+	return max_value;
+}
+
+double Average(const int (*array)[COLUMNS])
+{
+	double result{};
+
+	for (int i = 0; i < ROWS; i++)
+	{
+		for (int j = 0; j < COLUMNS; j++)
+		{
+			result += array[i][j];
+		}
+	}
+
+	return result / (ROWS * COLUMNS);
 }
