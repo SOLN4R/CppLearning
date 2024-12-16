@@ -1,78 +1,85 @@
 ﻿/*
  *	Objective:
- *	Master the basics of inheritance and virtual methods to create a class hierarchy.
+ *	Strengthen understanding of inheritance and polymorphism by creating
+ *	a base class and derived classes with virtual methods.
  */
 
 #include <iostream>
 
-class Shape
+class Vehicle
 {
 protected:
 	std::string name;
+	int speed;
 public:
-	Shape(const std::string& shape_name) : name(shape_name) {}
-	
-	virtual double GetArea() const = 0;
+	Vehicle(const std::string& vehicle_name, int vehicle_speed) :
+		name(vehicle_name), speed(vehicle_speed) { }
+
+	int GetSpeed() const { return speed; }
 
 	virtual void PrintInfo() const
 	{
-		std::cout << "Shape: " << name << std::endl;
+		std::cout << "Name: " << name << std::endl;
+		std::cout << "Speed: " << speed << " km/h" << std::endl;
 	}
+	virtual double GetTravelTime(double distance) const = 0;
 };
 
-class Rectangle : public Shape
+class Car : public Vehicle
 {
 private:
-	double width;
-	double height;
+	int fuelEfficiency;
 public:
-	Rectangle(const std::string& shape_name, double w, double h) :
-		Shape(shape_name), width(w), height(h) { }
+	Car(const std::string& c_name, int c_speed, int c_fuelEfficiency) :
+		Vehicle(c_name, c_speed), fuelEfficiency(c_fuelEfficiency) { }
 
-	double GetArea() const override 
+	double GetTravelTime(double distance) const override
 	{
-		return width * height;
+		return distance / GetSpeed();
+	}
+	double CalculateFuel(double distance) const {
+		return distance * fuelEfficiency / 100;
 	}
 	void PrintInfo() const override
 	{
-		Shape::PrintInfo();
-		std::cout << "Area: " << GetArea() << std::endl;
+		Vehicle::PrintInfo();
+		std::cout << "Travel time for 300 km: " << GetTravelTime(300) << " hours" << std::endl;
+		std::cout << "Fuel needed: " << CalculateFuel(300) << " liters" << std::endl;
 	}
 };
 
-class Circle : public Shape
+class Bicycle : public Vehicle
 {
-private:
-	double radius;
 public:
-	Circle(const std::string& shape_name, double r) :
-		Shape(shape_name), radius(r) { }
+	Bicycle(const std::string& b_name, int b_speed) :
+		Vehicle(b_name, b_speed) { }
 
-	double GetArea() const override
+	double GetTravelTime(double distance) const override
 	{
-		return 3.14 * (radius * radius);
+		return distance / GetSpeed();
 	}
 	void PrintInfo() const override
 	{
-		Shape::PrintInfo();
-		std::cout << "Area: " << GetArea() << std::endl;
+		Vehicle::PrintInfo();
+		std::cout << "Travel time for 300 km: " << GetTravelTime(300) << " hours" << std::endl;
 	}
 };
+
+
 
 int main()
 {
-	Shape* shapes[] = {
-		new Rectangle("Rectangle", 6, 9),
-		new Circle("Circle", 3)
+	Vehicle* vehicles[] =
+	{
+		new  Car("Car", 100, 7),
+		new Bicycle("Bicycle", 20)
 	};
 
-	for (Shape* shape : shapes)
+	for (Vehicle* vehicle : vehicles)
 	{
-		shape->PrintInfo();
+		vehicle->PrintInfo();
 		std::cout << std::endl;
-		delete shape;
+		delete vehicle;
 	}
-
-
 	return 0;
 }
