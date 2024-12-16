@@ -1,36 +1,35 @@
 ﻿/*
 	Objective:
-	Learn to work with variables and different data types in C++.
+	Get acquainted with basic arithmetic operations in C++ and learn how to read data from the user.
 */
 
 #include <iostream>
 
 int main()
 {
-	const int var_int = 42;
-	const float var_float = 3.14f;
-	const double var_double = 2.718;
-	const char var_char = 'A';
-	const bool var_bool = true;
-	const std::string var_string = "Hello World!";
+	int first_number{ 0 }, second_number{ 0 };
 
-	std::cout << "Value of variable of type int: " << var_int
-		<< ", size: " << sizeof(var_int) << " bytes." << std::endl;
+	std::cout << "Enter the first integer: ";
+	std::cin >> first_number;
 
-	std::cout << "Value of variable of type float: " << var_float
-		<< ", size: " << sizeof(var_float) << " bytes." << std::endl;
+	std::cout << "Enter the second integer: ";
+	std::cin >> second_number;
 
-	std::cout << "Value of variable of type double: " << var_double
-		<< ", size: " << sizeof(var_double) << " bytes." << std::endl;
+	std::cout << std::endl;
 
-	std::cout << "Value of variable of type char: " << var_char 
-		<< ", size: " << sizeof(var_char) << " bytes." << std::endl;
-
-	std::cout << "Value of variable of type bool: " << var_bool 
-		<< ", size: " << sizeof(var_bool) << " bytes." << std::endl;
-
-	std::cout << "Value of variable of type string: " << var_string
-		<< ", size: " << sizeof(var_string) << " bytes, length: " << var_string.size() << " characters." << std::endl;
+	std::cout << "Addition: " << (first_number + second_number) << std::endl;
+	std::cout << "Subtraction: " << (first_number - second_number) << std::endl;
+	std::cout << "Multiplication: " << (first_number * second_number) << std::endl;
+	
+	if (second_number != 0)
+	{
+		std::cout << "Division: " << (static_cast<double>(first_number) / second_number) << std::endl;
+		std::cout << "The remainder of the division: " << (first_number % second_number) << std::endl;
+	}
+	else 
+	{
+		std::cout << "Error: Division and remainder operations are not possible when the second number is zero." << std::endl;
+	}
 
 	return 0;
 }
