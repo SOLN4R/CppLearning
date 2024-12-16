@@ -1,35 +1,72 @@
 ﻿/*
 	Objective:
-	Get acquainted with basic arithmetic operations in C++ and learn how to read data from the user.
+	Learn how to use conditional constructions (if, else if, else)
+	and loops (for, while, do-while) to control program logic.
 */
 
 #include <iostream>
 
 int main()
 {
-	int first_number{ 0 }, second_number{ 0 };
+	int number{ 0 };
 
-	std::cout << "Enter the first integer: ";
-	std::cin >> first_number;
-
-	std::cout << "Enter the second integer: ";
-	std::cin >> second_number;
+	// Determining the parity of a number
+	std::cout << "Determining the parity of a number" << std::endl;
+	std::cout << "Enter an integer: ";
+	std::cin >> number;
+	if (number > 0)
+	{
+		std::cout << "The number is positive." << std::endl;
+	}
+	else if (number < 0)
+	{
+		std::cout << "The number is negative." << std::endl;
+	}
+	else
+	{
+		std::cout << "The number is zero." << std::endl;
+	}
 
 	std::cout << std::endl;
 
-	std::cout << "Addition: " << (first_number + second_number) << std::endl;
-	std::cout << "Subtraction: " << (first_number - second_number) << std::endl;
-	std::cout << "Multiplication: " << (first_number * second_number) << std::endl;
-	
-	if (second_number != 0)
+	// Output of numbers from 1 to N
+	std::cout << "Output of numbers from 1 to N" << std::endl;
+	std::cout << "Enter an integer for N: ";
+	std::cin >> number;
+	std::cout << "Numbers from 1 to N:";
+	for (int i = 1; i <= number; i++)
 	{
-		std::cout << "Division: " << (static_cast<double>(first_number) / second_number) << std::endl;
-		std::cout << "The remainder of the division: " << (first_number % second_number) << std::endl;
+		std::cout << " " << i;
 	}
-	else 
+
+	std::cout << std::endl;
+	std::cout << std::endl;
+
+	// Output of even numbers from 1 to N
+	std::cout << "Output of even numbers from 1 to N" << std::endl;
+	std::cout << "Enter an integer for N: ";
+	std::cin >> number;
+	std::cout << "Even numbers from 1 to M:";
+	int even_candidate{ 0 };
+	while (++even_candidate <= number)
 	{
-		std::cout << "Error: Division and remainder operations are not possible when the second number is zero." << std::endl;
+		if (even_candidate % 2 == 0)
+		{
+			std::cout << " " << even_candidate;
+		}
 	}
+
+	std::cout << std::endl;
+	std::cout << std::endl;
+
+	// Entering a positive integer
+	std::cout << "Entering a positive integer" << std::endl;
+	do
+	{
+		std::cout << "Enter a positive integer: ";
+		std::cin >> number;
+	} while (number <= 0);
+	std::cout << "Thank you! The positive number is " << number << "." << std::endl;
 
 	return 0;
 }
