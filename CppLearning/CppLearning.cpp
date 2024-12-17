@@ -1,60 +1,89 @@
 ﻿/*
  *	Objective:
- *	Practice inheritance and polymorphism by creating a base class 
- *	and implementing derived classes with overridden methods.
+ *	Practice using abstract classes, pure virtual methods,
+ *  and inheritance to build a flexible and modular program structure.
  */
 
 #include <iostream>
 
-class Animal
+class Device
 {
 protected:
 	std::string name;
 public:
-	Animal(const std::string& a_name) : name(a_name) {}
-
-	virtual void MakeSound() const = 0;
-
-	virtual void PrintInfo() const
+	Device(const std::string& device_name) : name(device_name) {}
+	virtual void TurnOn() const = 0;
+	virtual void TurnOff() const = 0;
+	virtual void ShowInfo() const
 	{
-		std::cout << "Animal: " << name << std::endl;
+		std::cout << "Device: " << name << std::endl;
 	}
 };
 
-class Dog : public Animal
+class Smartphone : public Device
 {
+private:
+	std::string brand;
+	int battery_life;
 public:
-	Dog(const std::string& d_name) : Animal(d_name) {}
+	Smartphone(const std::string& device_name, const std::string& brand_name, const int battery_life) :
+		Device(device_name), brand(brand_name), battery_life(battery_life) { }
 
-	void MakeSound() const override
+	void TurnOn() const override
 	{
-		std::cout << "Woof!" << std::endl;
+		std::cout << "Turning on the device..." << std::endl;
+	}
+	void TurnOff() const override
+	{
+		std::cout << "Turning off the device..." << std::endl;
+	}
+
+	void ShowInfo() const override
+	{
+		Device::ShowInfo();
+		std::cout << "Brand: " << brand << std::endl;
+		std::cout << "Battery Life: " << battery_life << " hours" << std::endl;
 	}
 };
 
-class Cat : public Animal
+class Laptop : public Device
 {
+private:
+	std::string model;
+	int ram;
 public:
-	Cat(const std::string& c_name) : Animal(c_name) {}
-	void MakeSound() const override
+	Laptop(const std::string& device_name, const std::string& model_name, const int ram_count) :
+		Device(device_name), model(model_name), ram(ram_count) { }
+	void TurnOn() const override
 	{
-		std::cout << "Meow!" << std::endl;
+		std::cout << "Turning on the device..." << std::endl;
+	}
+	void TurnOff() const override
+	{
+		std::cout << "Turning off the device..." << std::endl;
+	}
+	void ShowInfo() const override
+	{
+		Device::ShowInfo();
+		std::cout << "Model: " << model << std::endl;
+		std::cout << "RAM: " << ram << " GB" << std::endl;
 	}
 };
 
 int main()
 {
-	Animal* animals[] = {
-		new Dog("Rex"),
-		new Cat("Murzik")
+	Device* devices[] = {
+		new Smartphone("Smartphone", "Apple", 10),
+		new Laptop("Laptop", "Dell XPS 15", 16)
 	};
 
-	for (Animal* animal : animals)
+	for (Device* device : devices)
 	{
-		animal->PrintInfo();
-		animal->MakeSound();
+		device->TurnOn();
+		device->ShowInfo();
+		device->TurnOff();
+		delete device;
 		std::cout << std::endl;
-		delete animal;
 	}
 	return 0;
 }
