@@ -1,73 +1,67 @@
 ﻿/*
  *	Objective:
- *	Learn and implement template classes and functions to create generalized,
- *  reusable code that works with different data types.
+ *	Implement file reading and writing operations
+ *  in C++ using classes and standard file streams (fstream).
  */
 
 #include <iostream>
-#include <typeinfo>
+#include <fstream>
+#include <sstream>
 
-template <typename T>
-class Storage
+class FileManager
 {
-protected:
-	T value;
+private:
+	std::string file_name;
 public:
-	Storage(T input_value) : value(input_value) {}
-	void SetValue(const T& new_value)
-	{
-		value = new_value;
-	}
-	T GetValue() const
-	{
-		return value;
-	}
-	void PrintValue() const
-	{
-		std::cout << "Storage <";
+	FileManager(const std::string& file_name) : file_name(file_name) {}
 
-		if (typeid(value) == typeid(std::string)) 
-			std::cout << "std::string";
+	std::string GetFileName() const
+	{
+		return file_name;
+	}
+
+	void WriteToFile(const std::string& data) const
+	{
+		std::ofstream file(file_name, std::ios::app);
+		if (file.is_open())
+		{
+			file << data << std::endl;
+			file.close();
+		}
 		else
-			std::cout << typeid(value).name();
-
-		std::cout << ">: " << GetValue() << std::endl;
+			std::cerr << "Error: Unable to open file for writing!" << std::endl;
+	}
+	
+	std::string ReadFromFile() const
+	{
+		std::ifstream file(file_name);
+		if (file.is_open())
+		{
+			std::ostringstream buffer;
+			buffer << file.rdbuf();
+			if (buffer.str().empty())
+			{
+				std::cout << "File is empty!" << std::endl;
+			}
+			file.close();
+			return buffer.str();
+		}
+		else
+		{
+			std::cerr << "Unable to open file!" << std::endl;
+			return "";
+		}
 	}
 };
 
-template <typename T>
-T GetMax(T a, T b)
-{
-	return (a > b) ? a : b;
-}
-
 int main()
 {
-	Storage<int> value_int(10);
-	value_int.PrintValue();
+	FileManager file_manager("data.txt");
+	file_manager.WriteToFile("Hello, File Handling!");
+	file_manager.WriteToFile("C++ is powerful.");
 
-	Storage<double> value_double(15.5);
-	value_double.PrintValue();
-
-	Storage<std::string> value_string("Hello, Templates!");
-	value_string.PrintValue();
-
-	std::cout << std::endl;
-
-	auto a_int = Storage<int>(0);
-	auto b_int = Storage<int>(0);
-
-	a_int.SetValue(10);
-	b_int.SetValue(20);
-	std::cout << "Max of " << a_int.GetValue() << " and " << b_int.GetValue() << ": " << GetMax(a_int.GetValue(), b_int.GetValue()) << std::endl;
-
-	Storage<double> a_double(3.5);
-	Storage<double> b_double(2.1);
-	std::cout << "Max of " << a_double.GetValue() << " and " << b_double.GetValue() << ": " << GetMax(a_double.GetValue(), b_double.GetValue()) << std::endl;
-
-	Storage<std::string> a_string("apple");
-	Storage<std::string> b_string("orange");
-	std::cout << "Max of " << a_string.GetValue() << " and " << b_string.GetValue() << ": " << GetMax(a_string.GetValue(), b_string.GetValue()) << std::endl;
+	std::cout << "File " << file_manager.GetFileName() << " content:" << std::endl;
+	std::cout << file_manager.ReadFromFile() << std::endl;
 
 	return 0;
 }
