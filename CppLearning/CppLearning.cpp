@@ -1,89 +1,73 @@
 ﻿/*
  *	Objective:
- *	Practice using abstract classes, pure virtual methods,
- *  and inheritance to build a flexible and modular program structure.
+ *	Learn and implement template classes and functions to create generalized,
+ *  reusable code that works with different data types.
  */
 
 #include <iostream>
+#include <typeinfo>
 
-class Device
+template <typename T>
+class Storage
 {
 protected:
-	std::string name;
+	T value;
 public:
-	Device(const std::string& device_name) : name(device_name) {}
-	virtual void TurnOn() const = 0;
-	virtual void TurnOff() const = 0;
-	virtual void ShowInfo() const
+	Storage(T input_value) : value(input_value) {}
+	void SetValue(const T& new_value)
 	{
-		std::cout << "Device: " << name << std::endl;
+		value = new_value;
+	}
+	T GetValue() const
+	{
+		return value;
+	}
+	void PrintValue() const
+	{
+		std::cout << "Storage <";
+
+		if (typeid(value) == typeid(std::string)) 
+			std::cout << "std::string";
+		else
+			std::cout << typeid(value).name();
+
+		std::cout << ">: " << GetValue() << std::endl;
 	}
 };
 
-class Smartphone : public Device
+template <typename T>
+T GetMax(T a, T b)
 {
-private:
-	std::string brand;
-	int battery_life;
-public:
-	Smartphone(const std::string& device_name, const std::string& brand_name, const int battery_life) :
-		Device(device_name), brand(brand_name), battery_life(battery_life) { }
-
-	void TurnOn() const override
-	{
-		std::cout << "Turning on the device..." << std::endl;
-	}
-	void TurnOff() const override
-	{
-		std::cout << "Turning off the device..." << std::endl;
-	}
-
-	void ShowInfo() const override
-	{
-		Device::ShowInfo();
-		std::cout << "Brand: " << brand << std::endl;
-		std::cout << "Battery Life: " << battery_life << " hours" << std::endl;
-	}
-};
-
-class Laptop : public Device
-{
-private:
-	std::string model;
-	int ram;
-public:
-	Laptop(const std::string& device_name, const std::string& model_name, const int ram_count) :
-		Device(device_name), model(model_name), ram(ram_count) { }
-	void TurnOn() const override
-	{
-		std::cout << "Turning on the device..." << std::endl;
-	}
-	void TurnOff() const override
-	{
-		std::cout << "Turning off the device..." << std::endl;
-	}
-	void ShowInfo() const override
-	{
-		Device::ShowInfo();
-		std::cout << "Model: " << model << std::endl;
-		std::cout << "RAM: " << ram << " GB" << std::endl;
-	}
-};
+	return (a > b) ? a : b;
+}
 
 int main()
 {
-	Device* devices[] = {
-		new Smartphone("Smartphone", "Apple", 10),
-		new Laptop("Laptop", "Dell XPS 15", 16)
-	};
+	Storage<int> value_int(10);
+	value_int.PrintValue();
 
-	for (Device* device : devices)
-	{
-		device->TurnOn();
-		device->ShowInfo();
-		device->TurnOff();
-		delete device;
-		std::cout << std::endl;
-	}
+	Storage<double> value_double(15.5);
+	value_double.PrintValue();
+
+	Storage<std::string> value_string("Hello, Templates!");
+	value_string.PrintValue();
+
+	std::cout << std::endl;
+
+	auto a_int = Storage<int>(0);
+	auto b_int = Storage<int>(0);
+
+	a_int.SetValue(10);
+	b_int.SetValue(20);
+	std::cout << "Max of " << a_int.GetValue() << " and " << b_int.GetValue() << ": " << GetMax(a_int.GetValue(), b_int.GetValue()) << std::endl;
+
+	Storage<double> a_double(3.5);
+	Storage<double> b_double(2.1);
+	std::cout << "Max of " << a_double.GetValue() << " and " << b_double.GetValue() << ": " << GetMax(a_double.GetValue(), b_double.GetValue()) << std::endl;
+
+	Storage<std::string> a_string("apple");
+	Storage<std::string> b_string("orange");
+	std::cout << "Max of " << a_string.GetValue() << " and " << b_string.GetValue() << ": " << GetMax(a_string.GetValue(), b_string.GetValue()) << std::endl;
+
 	return 0;
 }
