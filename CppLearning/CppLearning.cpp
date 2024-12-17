@@ -1,70 +1,91 @@
 ﻿/*
  *	Objective:
- *	Implement exception handling in file operations to make the program
- *	more robust and error-resistant.
+ *	Implement a dynamic array of objects, ensuring proper memory management
+ *	and exception handling for invalid operations.
  */
 
 #include <iostream>
-#include <fstream>
-#include <sstream>
 
-class FileManager
+class Product
 {
 private:
-	std::string file_name;
+
+	std::string name;
+	double price;
+
 public:
-	FileManager(const std::string& file_name) : file_name(file_name) {}
 
-	std::string GetFileName() const
+	Product(const std::string product_name = "Unknow", const double product_price = 0.0) :
+		name(product_name), price(product_price) { }
+
+	void PrintInfo() const
 	{
-		return file_name;
+		std::cout << "Product: " << name << " | Price: " << price << std::endl;
 	}
 
-	void WriteToFile(const std::string& data) const
+	~Product() {}
+};
+
+class ProductManager
+{
+private:
+
+	Product* products;
+	int array_size;
+
+public:
+
+	ProductManager(const int size) : array_size(size)
 	{
-		std::ofstream file(file_name, std::ios::app);
-		if (!file.is_open()) throw std::runtime_error("Failed to open file: " + file_name);
-		file << data << std::endl;
-		std::cout << "Data successfully written to " << file_name << std::endl;
-		file.close();
+		if (size <= 0) throw std::invalid_argument("Size of the array must be greater than 0!");
+		products = new Product[array_size];
 	}
 
-	std::string ReadFromFile() const
+	void AddProduct(int index, const std::string& name, double price)
 	{
-		std::ifstream file(file_name);
-		if (!file.is_open()) throw std::runtime_error("Failed to open file: " + file_name);
-		std::ostringstream buffer;
-		buffer << file.rdbuf();
-		if (buffer.str().empty()) throw std::logic_error("File is empty!");
-		file.close();
-		return buffer.str();
+		if (index < 0 || index >= array_size) throw std::range_error("Going outside the array!");
+		products[index] = Product(name, price);
 	}
+
+	void PrintAllProducts() const
+	{
+		std::cout << "Product list:" << std::endl;
+		for (int i = 0; i < array_size; i++)
+		{
+			products[i].PrintInfo();
+		}
+	}
+
+	~ProductManager() {
+		delete[] products;
+	}
+
 };
 
 int main()
 {
+	ProductManager product_list(3);
+
 	try
 	{
-		FileManager file_manager("data.txt");
-		file_manager.WriteToFile("Hello, File Handling!");
-		file_manager.WriteToFile("C++ is powerful.");
-
-		std::cout << "File " << file_manager.GetFileName() << " content:" << std::endl;
-		std::cout << file_manager.ReadFromFile() << std::endl;
-
-		// Modeling an exception ----------------------
-		FileManager test("exception.txt");
-		std::cout << test.ReadFromFile() << std::endl;
-		// --------------------------------------------
+		product_list.AddProduct(0, "Apple", 1.5);
+		product_list.AddProduct(1, "Banana", 0.9);
+		product_list.AddProduct(2, "Orange", 1.2);
 	}
-	catch (const std::runtime_error& e) {
-		std::cerr << "Runtime error: " << e.what() << std::endl;
+	catch (const std::invalid_argument& e)
+	{
+		std::cerr << "Invalid argiment: " << e.what() << std::endl;
 	}
-	catch (const std::logic_error& e) {
-		std::cerr << "Logic error: " << e.what() << std::endl;
+	catch (const std::range_error& e)
+	{
+		std::cerr << "Range error: " << e.what() << std::endl;
 	}
-	catch (...) {
+	catch (...)
+	{
 		std::cerr << "An unknown error occurred." << std::endl;
 	}
+
+	product_list.PrintAllProducts();
+
 	return 0;
 }
