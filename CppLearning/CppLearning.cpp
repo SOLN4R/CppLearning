@@ -1,7 +1,7 @@
 ﻿/*
  *	Objective:
- *	Implement a dynamic array of objects, ensuring proper memory management
- *	and exception handling for invalid operations.
+ *	Learn to manage dynamic memory safely and
+ *	efficiently using std::unique_ptr for arrays of objects.
  */
 
 #include <iostream>
@@ -16,7 +16,8 @@ private:
 public:
 
 	Product(const std::string product_name = "Unknow", const double product_price = 0.0) :
-		name(product_name), price(product_price) { }
+		name(product_name), price(product_price) {
+	}
 
 	void PrintInfo() const
 	{
@@ -26,19 +27,21 @@ public:
 	~Product() {}
 };
 
-class ProductManager
+class ProductManagerSmart
 {
 private:
 
-	Product* products;
+	// Product* products;
+	std::unique_ptr<Product[]> products;
 	int array_size;
 
 public:
 
-	ProductManager(const int size) : array_size(size)
+	ProductManagerSmart(const int size) : array_size(size)
 	{
 		if (size <= 0) throw std::invalid_argument("Size of the array must be greater than 0!");
-		products = new Product[array_size];
+		//products = new Product[array_size];
+		products = std::make_unique<Product[]>(array_size);
 	}
 
 	void AddProduct(int index, const std::string& name, double price)
@@ -56,15 +59,15 @@ public:
 		}
 	}
 
-	~ProductManager() {
-		delete[] products;
+	~ProductManagerSmart() {
+		//delete[] products;
 	}
 
 };
 
 int main()
 {
-	ProductManager product_list(3);
+	ProductManagerSmart product_list(3);
 
 	try
 	{
