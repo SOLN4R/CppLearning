@@ -1,85 +1,60 @@
 ﻿/*
  *	Objective:
- *	Strengthen understanding of inheritance and polymorphism by creating
- *	a base class and derived classes with virtual methods.
+ *	Practice inheritance and polymorphism by creating a base class 
+ *	and implementing derived classes with overridden methods.
  */
 
 #include <iostream>
 
-class Vehicle
+class Animal
 {
 protected:
 	std::string name;
-	int speed;
 public:
-	Vehicle(const std::string& vehicle_name, int vehicle_speed) :
-		name(vehicle_name), speed(vehicle_speed) { }
+	Animal(const std::string& a_name) : name(a_name) {}
 
-	int GetSpeed() const { return speed; }
+	virtual void MakeSound() const = 0;
 
 	virtual void PrintInfo() const
 	{
-		std::cout << "Name: " << name << std::endl;
-		std::cout << "Speed: " << speed << " km/h" << std::endl;
-	}
-	virtual double GetTravelTime(double distance) const = 0;
-};
-
-class Car : public Vehicle
-{
-private:
-	int fuelEfficiency;
-public:
-	Car(const std::string& c_name, int c_speed, int c_fuelEfficiency) :
-		Vehicle(c_name, c_speed), fuelEfficiency(c_fuelEfficiency) { }
-
-	double GetTravelTime(double distance) const override
-	{
-		return distance / GetSpeed();
-	}
-	double CalculateFuel(double distance) const {
-		return distance * fuelEfficiency / 100;
-	}
-	void PrintInfo() const override
-	{
-		Vehicle::PrintInfo();
-		std::cout << "Travel time for 300 km: " << GetTravelTime(300) << " hours" << std::endl;
-		std::cout << "Fuel needed: " << CalculateFuel(300) << " liters" << std::endl;
+		std::cout << "Animal: " << name << std::endl;
 	}
 };
 
-class Bicycle : public Vehicle
+class Dog : public Animal
 {
 public:
-	Bicycle(const std::string& b_name, int b_speed) :
-		Vehicle(b_name, b_speed) { }
+	Dog(const std::string& d_name) : Animal(d_name) {}
 
-	double GetTravelTime(double distance) const override
+	void MakeSound() const override
 	{
-		return distance / GetSpeed();
-	}
-	void PrintInfo() const override
-	{
-		Vehicle::PrintInfo();
-		std::cout << "Travel time for 300 km: " << GetTravelTime(300) << " hours" << std::endl;
+		std::cout << "Woof!" << std::endl;
 	}
 };
 
-
+class Cat : public Animal
+{
+public:
+	Cat(const std::string& c_name) : Animal(c_name) {}
+	void MakeSound() const override
+	{
+		std::cout << "Meow!" << std::endl;
+	}
+};
 
 int main()
 {
-	Vehicle* vehicles[] =
-	{
-		new  Car("Car", 100, 7),
-		new Bicycle("Bicycle", 20)
+	Animal* animals[] = {
+		new Dog("Rex"),
+		new Cat("Murzik")
 	};
 
-	for (Vehicle* vehicle : vehicles)
+	for (Animal* animal : animals)
 	{
-		vehicle->PrintInfo();
+		animal->PrintInfo();
+		animal->MakeSound();
 		std::cout << std::endl;
-		delete vehicle;
+		delete animal;
 	}
 	return 0;
 }
