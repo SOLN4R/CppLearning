@@ -1,30 +1,37 @@
 ﻿/*
  *	Objective:
- *	Develop a singly linked list in C++ with the ability to dynamically manage nodes
- *	and perform standard operations such as insertion, deletion, and traversal.
+ *	Implement a doubly linked list in C++ with the ability to traverse both directions
+ *  and perform standard operations (insertion, deletion, and printing).
  */
 
 #include <iostream>
 
+template<typename T>
 struct Node
 {
-	int data;
+	T data;
 	Node* next;
-	Node(const int data, Node* next = nullptr) : data(data), next(next) {}
+	Node* prev;
+
+	Node(T data) : data(data), next(nullptr), prev(nullptr) {}
 };
 
-class LinkedList
+template<typename T>
+class DoublyLinkedList
 {
 private:
-	Node* head;
+	Node<T>* head; // ptr to the first node of the list
+	Node<T>* tail; // ptr to the last node in the list
 
 public:
-	LinkedList() : head(nullptr) {}
-	~LinkedList()
+	DoublyLinkedList() : head(nullptr), tail(nullptr) {}
+	~DoublyLinkedList() 
 	{
-		Node* current = head;
-		while (current != nullptr) {
-			Node* next = current->next;
+		Node<T>* current = head;
+
+		while (current != nullptr)
+		{
+			Node<T>* next = current->next;
 			delete current;
 			current = next;
 		}
@@ -35,30 +42,30 @@ public:
 		return head == nullptr;
 	}
 
-	void InsertFront(const int value) // adds an item to the top of the list
+	void InsertFront(T value)
 	{
-		head = new Node(value, head);
+		Node<T>* new_node = new Node<T>(value); // next, prev = nullptr
+
+		new_node->next = head;
+		
+		if (IsEmpty()) tail = new_node;
+		else head->prev = new_node;
+
+		head = new_node;
 	}
 
-	void InsertBack(int value) // adds an item to the end of the list
+	void InsertBack(T value)
 	{
-		Node* new_node = new Node(value);
+		Node<T>* new_node = new Node<T>(value);
+		
+		new_node->prev = tail;
+		if (IsEmpty()) head = new_node;
+		else tail->next = new_node;
 
-		if (IsEmpty()) 
-		{
-			head = new_node;
-			return;
-		}
-
-		Node* current = head;
-		while (current->next != nullptr)
-		{
-			current = current->next;
-		}
-		current->next = new_node;
+		tail = new_node;
 	}
 
-	void DeleteValue(const int value) // deletes the first node containing the specified value
+	void DeleteValue(T value)
 	{
 		if (IsEmpty())
 		{
@@ -66,31 +73,52 @@ public:
 			return;
 		}
 
-		Node* current = head;
-		Node* previous = nullptr;
+		Node<T>* current = head;
 
 		while (current != nullptr)
 		{
 			if (current->data == value)
 			{
-				if (current == head)
-				{
-					head = head->next;
-					delete current;
-					return;
-				}
-				previous->next = current->next;
-				delete current;
-				return;
+				break;
 			}
-			previous = current;
 			current = current->next;
 		}
 
-		std::cout << "Value " << value << " not found in the list." << std::endl;
+		if (current == nullptr)
+		{
+			std::cout << "Value " << value << " not found in the list." << std::endl;
+			return;
+		}
+
+		if (current == head)
+		{
+			head = current->next;
+			if (head != nullptr)
+			{
+				head->prev = nullptr;
+			}
+			else
+			{
+				tail = nullptr;
+			}
+		}
+		else if (current == tail)
+		{
+			tail = current->prev;
+			tail->next = nullptr;
+		}
+		else
+		{
+			current->prev->next = current->next;
+			current->next->prev = current->prev;
+		}
+
+		delete current;
+		std::cout << "Value " << value << " deleted from the list." << std::endl;
 	}
 
-	void PrintList(const std::string& message = "List:") const
+
+	void PrintList(const std::string& message = "List:", bool reverse = false) const
 	{
 		if (IsEmpty())
 		{
@@ -98,40 +126,48 @@ public:
 			return;
 		}
 
-		std::cout << message << "\t";
+		Node<T>* current = reverse ? tail : head;
 
-		Node* current = head;
+		std::cout << message;
+
 		while (current != nullptr)
 		{
 			std::cout << current->data << " ";
-			current = current->next;
+
+			current = reverse ? current->prev : current->next;
 		}
+
 		std::cout << std::endl;
 	}
 };
 
 int main()
 {
-	LinkedList list;
+	DoublyLinkedList<int> intList;
+	
+	intList.PrintList();
 
-	list.PrintList();
+	intList.InsertFront(3);
+	intList.PrintList("List after InsertFront(3):\t");
+	intList.InsertFront(2);
+	intList.PrintList("List after InsertFront(2):\t");
 
-	list.InsertFront(1);
-	list.InsertFront(2);
-	list.InsertFront(3);
-	list.PrintList("List after inserting at front:");
+	std::cout << std::endl;
 
-	list.InsertBack(4);
-	list.InsertBack(5);
-	list.InsertBack(2);
-	list.PrintList("List after inserting at back:");
+	intList.InsertBack(4);
+	intList.PrintList("List after InsertBack(4):\t");
+	intList.InsertBack(5);
+	intList.PrintList("List after InsertBack(5):\t");
 
-	list.DeleteValue(2);
-	list.PrintList("List after deleting value 2:");
+	std::cout << std::endl;
 
-	list.DeleteValue(2);
-	list.PrintList("List after deleting value 2:");
+	intList.PrintList("List (reversed):\t\t", true);
+	intList.PrintList("List:\t\t\t\t");
 
-	list.DeleteValue(2);
+	std::cout << std::endl;
+
+	intList.DeleteValue(3);
+	intList.PrintList("List after DeleteValue(3):\t");
+	intList.DeleteValue(6);
 	return 0;
 }
