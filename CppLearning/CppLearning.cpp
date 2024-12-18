@@ -1,105 +1,110 @@
 ﻿/*
  *	Objective:
- *	Implement two fundamental data structures, Stack and Queue,
- *	using dynamic arrays managed by std::unique_ptr.
+ *	Develop a singly linked list in C++ with the ability to dynamically manage nodes
+ *	and perform standard operations such as insertion, deletion, and traversal.
  */
 
 #include <iostream>
 
-class Stack // LIFO (Last In, First Out)
+struct Node
 {
-private:
-
-	std::unique_ptr<int[]> data;
-	int capacity; // the maximum stack capacity
-	int top; // is the index of the top element of the stack
-
-public:
-
-	Stack(const int size) : capacity(size), top(-1)
-	{
-		data = std::make_unique<int[]>(capacity);
-	}
-	bool IsEmpty() const
-	{
-		return top < 0;
-	}
-	bool IsFull() const
-	{
-		return top + 1 == capacity;
-	}
-	void Push(const int value)
-	{
-		
-		if (IsFull()) throw std::overflow_error("The stack is full.");
-		data[++top] = value;
-	}
-	int Pop()
-	{
-		if (IsEmpty()) throw std::underflow_error("The stack is empty.");
-		return data[top--];
-	}
-	
-	void Print(const std::string& message = "Stack elements:\t\t") const
-	{
-		if (IsEmpty()) throw std::underflow_error("The stack is empty.");
-		std::cout << message;
-		for (int i = 0; i <= top; i++)
-		{
-			std::cout << data[i] << " ";
-		}
-		std::cout << std::endl;
-	}
+	int data;
+	Node* next;
+	Node(const int data, Node* next = nullptr) : data(data), next(next) {}
 };
 
-class Queue // FIFO (First In, First Out)
+class LinkedList
 {
 private:
-
-	std::unique_ptr<int[]> data;
-	int capacity;
-	int front;		// is the index of the first element of the queue
-	int rear;		// is the index of the last element of the queue.
-	int size;		// the current queue size
+	Node* head;
 
 public:
-	Queue(const int capacity) : capacity(capacity), front(0), rear(0), size(0)
+	LinkedList() : head(nullptr) {}
+	~LinkedList()
 	{
-		data = std::make_unique<int[]>(capacity);
+		Node* current = head;
+		while (current != nullptr) {
+			Node* next = current->next;
+			delete current;
+			current = next;
+		}
 	}
 
-	bool IsFull() const
-	{
-		return size == capacity;
-	}
 	bool IsEmpty() const
 	{
-		return !size;
-	}
-	void Enqueue(int value)
-	{
-		if (IsFull()) throw std::overflow_error("The queue is full.");
-		data[rear] = value;
-		rear = (rear + 1) % capacity;
-		size++;
-	}
-	int Dequeue()
-	{
-		if (IsEmpty()) throw std::overflow_error("The queue is empty.");
-		int value = data[front];
-		front = (front + 1) % capacity;
-		size--;
-		return value;
+		return head == nullptr;
 	}
 
-	void Print(const std::string& message = "Queue elements:\t\t") const
+	void InsertFront(const int value) // adds an item to the top of the list
 	{
-		if (IsEmpty()) throw std::underflow_error("The queue is empty.");
-		std::cout << message;
-		for (int i = 0; i < size; i++)
+		head = new Node(value, head);
+	}
+
+	void InsertBack(int value) // adds an item to the end of the list
+	{
+		Node* new_node = new Node(value);
+
+		if (IsEmpty()) 
 		{
-			int index = (front + i) % capacity;
-			std::cout << data[index] << " ";
+			head = new_node;
+			return;
+		}
+
+		Node* current = head;
+		while (current->next != nullptr)
+		{
+			current = current->next;
+		}
+		current->next = new_node;
+	}
+
+	void DeleteValue(const int value) // deletes the first node containing the specified value
+	{
+		if (IsEmpty())
+		{
+			std::cout << "The list is empty." << std::endl;
+			return;
+		}
+
+		Node* current = head;
+		Node* previous = nullptr;
+
+		while (current != nullptr)
+		{
+			if (current->data == value)
+			{
+				if (current == head)
+				{
+					head = head->next;
+					delete current;
+					return;
+				}
+				previous->next = current->next;
+				delete current;
+				return;
+			}
+			previous = current;
+			current = current->next;
+		}
+
+		std::cout << "Value " << value << " not found in the list." << std::endl;
+	}
+
+	void PrintList(const std::string& message = "List:") const
+	{
+		if (IsEmpty())
+		{
+			std::cout << "The list is empty." << std::endl;
+			return;
+		}
+
+		std::cout << message << "\t";
+
+		Node* current = head;
+		while (current != nullptr)
+		{
+			std::cout << current->data << " ";
+			current = current->next;
 		}
 		std::cout << std::endl;
 	}
@@ -107,45 +112,26 @@ public:
 
 int main()
 {
-	Stack stack(5);
+	LinkedList list;
 
-	stack.Push(1);
-	stack.Push(2);
-	stack.Push(3);
-	stack.Push(4);
-	stack.Push(5);
+	list.PrintList();
 
-	stack.Print();
+	list.InsertFront(1);
+	list.InsertFront(2);
+	list.InsertFront(3);
+	list.PrintList("List after inserting at front:");
 
-	stack.Pop();
-	stack.Print("Stack after pop:\t");
+	list.InsertBack(4);
+	list.InsertBack(5);
+	list.InsertBack(2);
+	list.PrintList("List after inserting at back:");
 
-	stack.Pop();
-	stack.Print("Stack after pop:\t");
-	
-	stack.Push(9);
-	stack.Print("Stack after push (9):\t");
+	list.DeleteValue(2);
+	list.PrintList("List after deleting value 2:");
 
-	std::cout << std::endl;
+	list.DeleteValue(2);
+	list.PrintList("List after deleting value 2:");
 
-	Queue queue(5);
-
-	queue.Enqueue(1);
-	queue.Enqueue(2);
-	queue.Enqueue(3);
-	queue.Enqueue(4);
-	queue.Enqueue(5);
-
-	queue.Print();
-
-	queue.Dequeue();
-	queue.Print("Queue after Dequeue:\t");
-
-	queue.Dequeue();
-	queue.Print("Queue after Dequeue:\t");
-
-	queue.Enqueue(9);
-	queue.Print("Queue after Enqueue:\t");
-
+	list.DeleteValue(2);
 	return 0;
 }
