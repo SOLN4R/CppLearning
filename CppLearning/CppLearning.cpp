@@ -1,173 +1,90 @@
 ﻿/*
- *	Objective:
- *	Implement a doubly linked list in C++ with the ability to traverse both directions
- *  and perform standard operations (insertion, deletion, and printing).
+ *	Basics and working with memory
  */
 
 #include <iostream>
 
-template<typename T>
-struct Node
-{
-	T data;
-	Node* next;
-	Node* prev;
+void DynamicArray(const int);
+void TwoDimensionalDynamicArray(const int, const int);
 
-	Node(T data) : data(data), next(nullptr), prev(nullptr) {}
-};
-
-template<typename T>
-class DoublyLinkedList
-{
-private:
-	Node<T>* head; // ptr to the first node of the list
-	Node<T>* tail; // ptr to the last node in the list
-
-public:
-	DoublyLinkedList() : head(nullptr), tail(nullptr) {}
-	~DoublyLinkedList() 
-	{
-		Node<T>* current = head;
-
-		while (current != nullptr)
-		{
-			Node<T>* next = current->next;
-			delete current;
-			current = next;
-		}
-	}
-
-	bool IsEmpty() const
-	{
-		return head == nullptr;
-	}
-
-	void InsertFront(T value)
-	{
-		Node<T>* new_node = new Node<T>(value); // next, prev = nullptr
-
-		new_node->next = head;
-		
-		if (IsEmpty()) tail = new_node;
-		else head->prev = new_node;
-
-		head = new_node;
-	}
-
-	void InsertBack(T value)
-	{
-		Node<T>* new_node = new Node<T>(value);
-		
-		new_node->prev = tail;
-		if (IsEmpty()) head = new_node;
-		else tail->next = new_node;
-
-		tail = new_node;
-	}
-
-	void DeleteValue(T value)
-	{
-		if (IsEmpty())
-		{
-			std::cout << "The list is empty." << std::endl;
-			return;
-		}
-
-		Node<T>* current = head;
-
-		while (current != nullptr)
-		{
-			if (current->data == value)
-			{
-				break;
-			}
-			current = current->next;
-		}
-
-		if (current == nullptr)
-		{
-			std::cout << "Value " << value << " not found in the list." << std::endl;
-			return;
-		}
-
-		if (current == head)
-		{
-			head = current->next;
-			if (head != nullptr)
-			{
-				head->prev = nullptr;
-			}
-			else
-			{
-				tail = nullptr;
-			}
-		}
-		else if (current == tail)
-		{
-			tail = current->prev;
-			tail->next = nullptr;
-		}
-		else
-		{
-			current->prev->next = current->next;
-			current->next->prev = current->prev;
-		}
-
-		delete current;
-		std::cout << "Value " << value << " deleted from the list." << std::endl;
-	}
-
-
-	void PrintList(const std::string& message = "List:", bool reverse = false) const
-	{
-		if (IsEmpty())
-		{
-			std::cout << "The list is empty." << std::endl;
-			return;
-		}
-
-		Node<T>* current = reverse ? tail : head;
-
-		std::cout << message;
-
-		while (current != nullptr)
-		{
-			std::cout << current->data << " ";
-
-			current = reverse ? current->prev : current->next;
-		}
-
-		std::cout << std::endl;
-	}
-};
+void SwapValue(int&, int&);
 
 int main()
 {
-	DoublyLinkedList<int> intList;
+	std::cout << "Dynamic array:" << std::endl;
+	int size{ 0 };
+	std::cout << "Enter the size of the array: ";
+	std::cin >> size;
+	DynamicArray(size);
 	
-	intList.PrintList();
+	std::cout << "\n" << std::endl;
 
-	intList.InsertFront(3);
-	intList.PrintList("List after InsertFront(3):\t");
-	intList.InsertFront(2);
-	intList.PrintList("List after InsertFront(2):\t");
+	std::cout << "Two-dimensional dynamic array:" << std::endl;
+	int rows, columns;
+	std::cout << "Enter the number of rows and columns (a b): ";
+	std::cin >> rows >> columns;
+	TwoDimensionalDynamicArray(rows, columns);
 
-	std::cout << std::endl;
+	std::cout << "\n" << std::endl;
 
-	intList.InsertBack(4);
-	intList.PrintList("List after InsertBack(4):\t");
-	intList.InsertBack(5);
-	intList.PrintList("List after InsertBack(5):\t");
-
-	std::cout << std::endl;
-
-	intList.PrintList("List (reversed):\t\t", true);
-	intList.PrintList("List:\t\t\t\t");
-
-	std::cout << std::endl;
-
-	intList.DeleteValue(3);
-	intList.PrintList("List after DeleteValue(3):\t");
-	intList.DeleteValue(6);
+	std::cout << "Swap elements:" << std::endl;
+	int a{ 10 }, b{ 20 };
+	std::cout << "Before the exchange: a = " << a << ", b = " << b << std::endl;
+	SwapValue(a, b);
+	std::cout << "After the exchange: a = " << a << ", b = " << b << std::endl;
 	return 0;
+}
+
+void DynamicArray(const int size)
+{
+	int* array = new int[size];
+	std::cout << "Array:";
+	for (int i = 0; i < size; i++)
+	{
+		array[i] = i + 1;
+		std::cout << " " << array[i];
+	}
+	delete[] array;
+	array = nullptr;
+}
+
+void TwoDimensionalDynamicArray(const int rows, const int columns)
+{
+	int value = 1;
+	int** array = new int*[rows];
+	for (int i = 0; i < rows; i++)
+	{
+		array[i] = new int[columns];
+	}
+
+	std::cout << "Array:" << std::endl;
+
+	for (int i = 0; i < rows; i++)
+	{
+		for (int j = 0; j < columns; j++)
+		{
+			array[i][j] = value++;
+			std::cout << array[i][j] << "\t";
+		}
+		std::cout << std::endl;
+	}
+
+	for (int i = 0; i < rows; i++)
+	{
+		delete[] array[i];
+	}
+	delete[] array;
+}
+
+void SwapValue(int& a, int& b)
+{
+	int temp = a;
+	a = b;
+	b = temp;
+
+	/*
+	a = a + b;
+	b = a - b;
+	a = a - b;
+	*/
 }
