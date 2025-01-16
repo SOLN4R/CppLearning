@@ -1,10 +1,9 @@
 ﻿/*
- *	 Basics of OOP: inheritance
+ *	 Basics of OOP: polymorphism
  */
 
 #include <iostream>
 
-const int MIN_HEALTH = 0;
 const int MAX_HEALTH = 100;
 const int INITIAL_LEVEL = 1;
 const int INITIAL_MANA = 20;
@@ -19,32 +18,11 @@ protected:
 
 public:
 	Character(const std::string& name, int health = MAX_HEALTH, int level = INITIAL_LEVEL) : name(name), health(health), level(level) {}
-	
-	void TakeDamage(int amount)
+	virtual ~Character()
 	{
-		health = std::max(MIN_HEALTH, health -= amount);
-
-		if (health <= MIN_HEALTH) {
-			std::cout << "[Info] " << name << "'s character is destroyed." << std::endl;
-		}
-		else {
-			std::cout << "[Info] " << name << "'s character took damage of " << amount << "." << std::endl;
-		}
+		std::cout << "Character " << name << " destroyed." << std::endl;
 	}
-
-	void Heal(int amount)
-	{
-		health = std::min(MAX_HEALTH, health += amount);
-		std::cout << "[Info] " << name << "'s character's health has been increased to " << health << "." << std::endl;
-	}
-
-	void DisplayStatus()
-	{
-		std::cout << "Character info:" << std::endl;
-		std::cout << "Name: " << name << std::endl;
-		std::cout << "Health: " << health << std::endl;
-		std::cout << "Level: " << level << std::endl;
-	}
+	virtual void DisplayStatus() const {}
 };
 
 class Warrior : public Character
@@ -56,10 +34,18 @@ public:
 	{
 		std::cout << "Warrior created." << std::endl;
 	}
-
-	void Attack()
+	~Warrior()
 	{
-		std::cout << "The " << name << " warrior attacked with " << _weapon << std::endl;
+		std::cout << "Warrior " << name << " destroyed." << std::endl;
+	}
+	
+	void DisplayStatus() const override
+	{
+		std::cout << "Warrior info:" << std::endl;
+		std::cout << "Name: " << name << std::endl;
+		std::cout << "Health: " << health << std::endl;
+		std::cout << "Level: " << level << std::endl;
+		std::cout << "Weapon: " << _weapon << std::endl;
 	}
 };
 
@@ -72,18 +58,12 @@ public:
 	{
 		std::cout << "Magician created." << std::endl;
 	}
-
-	void CastSpell()
+	~Magician()
 	{
-		if (_mana - MANA_COST_SPELL < 0) {
-			std::cout << "[Info] Not enough mana for spell." << std::endl;
-			return;
-		}
-		_mana -= MANA_COST_SPELL;
-		std::cout << "The " << name << " magician cast a spell. Remaining Mana: " << _mana << std::endl;
+		std::cout << "Magician " << name << " destroyed." << std::endl;
 	}
 
-	void DisplayStatus()
+	void DisplayStatus() const override
 	{
 		std::cout << "Magician info:" << std::endl;
 		std::cout << "Name: " << name << std::endl;
@@ -95,17 +75,16 @@ public:
 
 int main()
 {
-	Warrior troll("Troll", "Axe");
-	troll.DisplayStatus();
-	std::cout << std::endl;
+	int const CHARACTERS_COUNT = 2;
+	Character* characters[CHARACTERS_COUNT]{};
 
-	Magician invoker("Invoker");
-	invoker.DisplayStatus();
-	std::cout << std::endl;
+	characters[0] = new Warrior("Troll", "Axe");
+	characters[1] = new Magician("Invoker");
 
-	troll.Attack();
-	invoker.CastSpell();
-	invoker.CastSpell();
-	invoker.CastSpell();
+	for (int i = 0; i < CHARACTERS_COUNT; i++)
+	{
+		characters[i]->DisplayStatus();
+		delete characters[i];
+	}
 	return 0;
 }
