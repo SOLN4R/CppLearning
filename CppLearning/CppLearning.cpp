@@ -1,90 +1,78 @@
 ﻿/*
- *	Basics and working with memory
+ *	 Basics of OOP: creating classes, objects and encapsulation
  */
 
 #include <iostream>
 
-void DynamicArray(const int);
-void TwoDimensionalDynamicArray(const int, const int);
+class Character
+{
+public:
+	std::string name;
+private:
+	int _health = 100;
+	int _level = 1;
 
-void SwapValue(int&, int&);
+public:
+	void TakeDamage(int damage)
+	{
+		if (damage <= 0) {
+			std::cout << "[Error] The damage must be greater than 0." << std::endl;
+			return;
+		}
+
+		_health = std::max(0, _health -= damage);
+		
+		if (_health <= 0) {
+			std::cout << "[Info] " << name << "'s character is destroyed." << std::endl;
+		}
+		else {
+			std::cout << "[Info] " << name << "'s character took damage of " << damage << "." << std::endl;
+		}
+	}
+
+	void Heal(int amount)
+	{
+		if (amount <= 0) {
+			std::cout << "[Error] The heal amount must be greater than 0." << std::endl;
+			return;
+		}
+
+		_health = std::min(100, _health += amount);
+		std::cout << "[Info] " << name << "'s character's health has been increased to " << _health << "." << std::endl;
+	}
+	
+	void DisplayStatus()
+	{
+		if (name.empty()) {
+			std::cout << "[Error] Name cannot be empty!" << std::endl;
+			return;
+		}
+
+		std::cout << "Character:" << std::endl;
+		std::cout << "Name: " << name << std::endl;
+		std::cout << "Health: " << _health << std::endl;
+		std::cout << "Level: " << _level << std::endl;
+	}
+};
 
 int main()
 {
-	std::cout << "Dynamic array:" << std::endl;
-	int size{ 0 };
-	std::cout << "Enter the size of the array: ";
-	std::cin >> size;
-	DynamicArray(size);
-	
-	std::cout << "\n" << std::endl;
+	Character warrior;
+	Character magician;
 
-	std::cout << "Two-dimensional dynamic array:" << std::endl;
-	int rows, columns;
-	std::cout << "Enter the number of rows and columns (a b): ";
-	std::cin >> rows >> columns;
-	TwoDimensionalDynamicArray(rows, columns);
+	warrior.DisplayStatus();
 
-	std::cout << "\n" << std::endl;
+	warrior.name = "Warrior";
+	magician.name = "Magician";
 
-	std::cout << "Swap elements:" << std::endl;
-	int a{ 10 }, b{ 20 };
-	std::cout << "Before the exchange: a = " << a << ", b = " << b << std::endl;
-	SwapValue(a, b);
-	std::cout << "After the exchange: a = " << a << ", b = " << b << std::endl;
+	warrior.DisplayStatus();
+	warrior.TakeDamage(20);
+	warrior.Heal(10);
+	warrior.DisplayStatus();
+
+	magician.DisplayStatus();
+	magician.TakeDamage(50);
+	magician.Heal(20);
+	magician.DisplayStatus();
 	return 0;
-}
-
-void DynamicArray(const int size)
-{
-	int* array = new int[size];
-	std::cout << "Array:";
-	for (int i = 0; i < size; i++)
-	{
-		array[i] = i + 1;
-		std::cout << " " << array[i];
-	}
-	delete[] array;
-	array = nullptr;
-}
-
-void TwoDimensionalDynamicArray(const int rows, const int columns)
-{
-	int value = 1;
-	int** array = new int*[rows];
-	for (int i = 0; i < rows; i++)
-	{
-		array[i] = new int[columns];
-	}
-
-	std::cout << "Array:" << std::endl;
-
-	for (int i = 0; i < rows; i++)
-	{
-		for (int j = 0; j < columns; j++)
-		{
-			array[i][j] = value++;
-			std::cout << array[i][j] << "\t";
-		}
-		std::cout << std::endl;
-	}
-
-	for (int i = 0; i < rows; i++)
-	{
-		delete[] array[i];
-	}
-	delete[] array;
-}
-
-void SwapValue(int& a, int& b)
-{
-	int temp = a;
-	a = b;
-	b = temp;
-
-	/*
-	a = a + b;
-	b = a - b;
-	a = a - b;
-	*/
 }
