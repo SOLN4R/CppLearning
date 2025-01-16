@@ -1,51 +1,63 @@
 ﻿/*
- *	 Basics of OOP: polymorphism
+ *	 Basics of OOP: abstract class and interface
  */
 
 #include <iostream>
 
-const int MAX_HEALTH = 100;
-const int INITIAL_LEVEL = 1;
-const int INITIAL_MANA = 20;
-const int MANA_COST_SPELL = 10;
-
+// Abstract class
 class Character
 {
 protected:
 	std::string name;
-	int health;
-	int level;
-
 public:
-	Character(const std::string& name, int health = MAX_HEALTH, int level = INITIAL_LEVEL) : name(name), health(health), level(level) {}
-	virtual ~Character()
+	Character(const std::string& name = "NoName") : name(name) {}
+	virtual ~Character() {}
+	virtual void DisplayStatus() const = 0;
+
+	void SetName(const std::string& new_name)
 	{
-		std::cout << "Character " << name << " destroyed." << std::endl;
+		name = new_name;
 	}
-	virtual void DisplayStatus() const {}
+	std::string GetName() const
+	{
+		return name;
+	}
+
 };
 
-class Warrior : public Character
+// Interface
+class Fightable
+{
+public:
+	virtual ~Fightable() {}
+	virtual void Attack() const = 0;
+};
+
+// Derived class
+class Warrior : public Character, public Fightable
 {
 private:
 	std::string _weapon;
 public:
-	Warrior(const std::string& name, const std::string& weapon) : Character(name), _weapon(weapon)
+	Warrior(const std::string& weapon) : _weapon(weapon)
 	{
-		std::cout << "Warrior created." << std::endl;
+		std::cout << "Warrior " << name << " created." << std::endl;
 	}
 	~Warrior()
 	{
 		std::cout << "Warrior " << name << " destroyed." << std::endl;
 	}
-	
+
 	void DisplayStatus() const override
 	{
 		std::cout << "Warrior info:" << std::endl;
 		std::cout << "Name: " << name << std::endl;
-		std::cout << "Health: " << health << std::endl;
-		std::cout << "Level: " << level << std::endl;
 		std::cout << "Weapon: " << _weapon << std::endl;
+	}
+
+	void Attack() const override
+	{
+		std::cout << "Warrior attacks!" << std::endl;
 	}
 };
 
@@ -54,21 +66,18 @@ class Magician : public Character
 private:
 	int _mana;
 public:
-	Magician(const std::string& name, int mana = INITIAL_MANA) : Character(name), _mana(mana)
+	Magician(int mana = 50) : _mana(mana)
 	{
-		std::cout << "Magician created." << std::endl;
+		std::cout << "Magician " << name << " created." << std::endl;
 	}
 	~Magician()
 	{
 		std::cout << "Magician " << name << " destroyed." << std::endl;
 	}
-
 	void DisplayStatus() const override
 	{
 		std::cout << "Magician info:" << std::endl;
 		std::cout << "Name: " << name << std::endl;
-		std::cout << "Health: " << health << std::endl;
-		std::cout << "Level: " << level << std::endl;
 		std::cout << "Mana: " << _mana << std::endl;
 	}
 };
@@ -76,14 +85,26 @@ public:
 int main()
 {
 	int const CHARACTERS_COUNT = 2;
-	Character* characters[CHARACTERS_COUNT]{};
+	Character* characters[CHARACTERS_COUNT];
+	characters[0] = new Warrior("Axe");
+	characters[1] = new Magician();
 
-	characters[0] = new Warrior("Troll", "Axe");
-	characters[1] = new Magician("Invoker");
+	characters[0]->SetName("Troll");
+	characters[1]->SetName("Invoker");
 
-	for (int i = 0; i < CHARACTERS_COUNT; i++)
+	Fightable* fightable;
+	for(int i = 0; i < CHARACTERS_COUNT; i++)
 	{
+		std::cout << std::endl;
 		characters[i]->DisplayStatus();
+		std::cout << std::endl;
+		fightable = dynamic_cast<Fightable*>(characters[i]);
+		if (fightable) {
+			fightable->Attack();
+		}
+		else {
+			std::cout << "Character " << characters[i]->GetName() << " cannot attack." << std::endl;
+		}
 		delete characters[i];
 	}
 	return 0;
