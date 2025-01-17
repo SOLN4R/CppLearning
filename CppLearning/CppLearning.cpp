@@ -1,8 +1,11 @@
 ﻿/*
- *	 Simple inventory system
+ *	 Simple inventory system (fixed)
  */
 
 #include <iostream>
+#include <string>
+#include <limits>
+
 
 const int MAX_INVENTORY_SIZE = 100;
 
@@ -59,8 +62,8 @@ public:
 
 		if (is_found)
 		{
-			_items[_current_size].clear();
 			_current_size--;
+			_items[_current_size].clear();
 			std::cout << "[Info] The " << item << " item has been deleted." << std::endl;
 			return;
 		}
@@ -78,22 +81,12 @@ public:
 
 	bool IsEmpty() const
 	{
-		if (_current_size <= 0)
-		{
-			std::cout << "[Info] The inventory is empty." << std::endl;
-			return true;
-		}
-		else return false;
+		return _current_size == 0;
 	}
 
 	bool IsFull() const
 	{
-		if (_current_size == _max_size)
-		{
-			std::cout << "[Info] The inventory is full." << std::endl;
-			return true;
-		}
-		else return false;
+		return _current_size == _max_size;
 	}
 };
 
@@ -145,25 +138,39 @@ int main()
 		{
 		case ADD_ITEM:
 		{
-			if (inventary.IsFull()) break;
+			if (inventary.IsFull()) 
+			{
+				std::cout << "[Info] The inventory is full." << std::endl;
+				break;
+			}
 			std::string item;
 			std::cout << "> Enter item name: ";
-			std::cin >> item;
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			std::getline(std::cin, item);
 			inventary.AddItem(item);
 			break;
 		}
 		case REMOVE_ITEM:
 		{
-			if (inventary.IsEmpty()) break;
+			if (inventary.IsEmpty()) 
+			{
+				std::cout << "[Info] The inventory is empty." << std::endl;
+				break;
+			}
 			std::string item;
 			std::cout << "> Enter item to remove: ";
-			std::cin >> item;
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			std::getline(std::cin, item);
 			inventary.RemoveItem(item);
 			break;
 		}
 		case SHOW_INVENTORY:
 		{
-			if (inventary.IsEmpty()) break;
+			if (inventary.IsEmpty()) 
+			{
+				std::cout << "[Info] The inventory is empty." << std::endl;
+				break;
+			}
 			inventary.ShowInventory();
 			break;
 		}
