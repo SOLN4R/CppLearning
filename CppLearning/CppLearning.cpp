@@ -1,111 +1,181 @@
 ﻿/*
- *	 Basics of OOP: abstract class and interface
+ *	 Simple inventory system
  */
 
 #include <iostream>
 
-// Abstract class
-class Character
-{
-protected:
-	std::string name;
-public:
-	Character(const std::string& name = "NoName") : name(name) {}
-	virtual ~Character() {}
-	virtual void DisplayStatus() const = 0;
+const int MAX_INVENTORY_SIZE = 100;
 
-	void SetName(const std::string& new_name)
-	{
-		name = new_name;
-	}
-	std::string GetName() const
-	{
-		return name;
-	}
-
-};
-
-// Interface
-class Fightable
-{
-public:
-	virtual ~Fightable() {}
-	virtual void Attack() const = 0;
-};
-
-// Derived class
-class Warrior : public Character, public Fightable
+class Inventory
 {
 private:
-	std::string _weapon;
+	std::string* _items;
+	int _current_size;
+	const int _max_size;
 public:
-	Warrior(const std::string& weapon) : _weapon(weapon)
+	Inventory(const int max_size) : _max_size(max_size)
 	{
-		std::cout << "Warrior " << name << " created." << std::endl;
-	}
-	~Warrior()
-	{
-		std::cout << "Warrior " << name << " destroyed." << std::endl;
+		_items = new std::string[max_size];
+		_current_size = 0;
+		std::cout << "[Core] An inventory with a size of " << _max_size << " has been created." << std::endl;
 	}
 
-	void DisplayStatus() const override
+	~Inventory() 
 	{
-		std::cout << "Warrior info:" << std::endl;
-		std::cout << "Name: " << name << std::endl;
-		std::cout << "Weapon: " << _weapon << std::endl;
+		delete[] _items;
+		_items = nullptr;
+		std::cout << "[Core] The inventory has completed its work and cleared the memory." << std::endl;
 	}
 
-	void Attack() const override
+	void AddItem(const std::string& item)
 	{
-		std::cout << "Warrior attacks!" << std::endl;
+		if (_current_size >= _max_size)
+		{
+			std::cout << "[Error] There is no space in the inventory." << std::endl;
+			return;
+		}
+		_items[_current_size] = item;
+		_current_size++;
+		std::cout << "[Info] " << item << " has been added to the inventory." << std::endl;
+	}
+
+	void RemoveItem(const std::string& item)
+	{
+		bool is_found = false;
+
+		for (int i = 0; i < _current_size; i++)
+		{
+			if (is_found) 
+			{
+				_items[i - 1] = _items[i];
+				continue;
+			}
+
+			if (_items[i] == item) 
+			{
+				is_found = true;
+			}
+		}
+
+		if (is_found)
+		{
+			_items[_current_size].clear();
+			_current_size--;
+			std::cout << "[Info] The " << item << " item has been deleted." << std::endl;
+			return;
+		}
+		std::cout << "[Error] The item was not found." << std::endl;
+	}
+
+	void ShowInventory() const
+	{
+		std::cout << "Inventory:" << std::endl;
+		for (int i = 0; i < _current_size; i++)
+		{
+			std::cout << i + 1 << ". " << _items[i] << std::endl;
+		}
+	}
+
+	bool IsEmpty() const
+	{
+		if (_current_size <= 0)
+		{
+			std::cout << "[Info] The inventory is empty." << std::endl;
+			return true;
+		}
+		else return false;
+	}
+
+	bool IsFull() const
+	{
+		if (_current_size == _max_size)
+		{
+			std::cout << "[Info] The inventory is full." << std::endl;
+			return true;
+		}
+		else return false;
 	}
 };
 
-class Magician : public Character
+int InputPositiveNumber(const std::string& message, const int max_number)
 {
-private:
-	int _mana;
-public:
-	Magician(int mana = 50) : _mana(mana)
-	{
-		std::cout << "Magician " << name << " created." << std::endl;
+	int number;
+
+	while (true) {
+		std::cout << message;
+		std::cin >> number;
+
+		if (std::cin.fail() || number < 1 || number > max_number)
+		{
+			std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			std::cout << "[Error] Invalid input." << std::endl;
+			continue;
+		}
+		return number;
 	}
-	~Magician()
-	{
-		std::cout << "Magician " << name << " destroyed." << std::endl;
-	}
-	void DisplayStatus() const override
-	{
-		std::cout << "Magician info:" << std::endl;
-		std::cout << "Name: " << name << std::endl;
-		std::cout << "Mana: " << _mana << std::endl;
-	}
-};
+	
+}
 
 int main()
 {
-	int const CHARACTERS_COUNT = 2;
-	Character* characters[CHARACTERS_COUNT];
-	characters[0] = new Warrior("Axe");
-	characters[1] = new Magician();
-
-	characters[0]->SetName("Troll");
-	characters[1]->SetName("Invoker");
-
-	Fightable* fightable;
-	for(int i = 0; i < CHARACTERS_COUNT; i++)
+	enum inventory_menu
 	{
-		std::cout << std::endl;
-		characters[i]->DisplayStatus();
-		std::cout << std::endl;
-		fightable = dynamic_cast<Fightable*>(characters[i]);
-		if (fightable) {
-			fightable->Attack();
+		ADD_ITEM = 1,
+		REMOVE_ITEM,
+		SHOW_INVENTORY,
+		EXIT
+	};
+
+	std::cout << "Welcome to simple inventory system." << std::endl;
+	int inventory_size = InputPositiveNumber("\nEnter maximum inventory size: ", MAX_INVENTORY_SIZE);
+	Inventory inventary(inventory_size);
+
+	bool is_running = true;
+	while (is_running)
+	{
+		std::cout << "\nInventory menu:" << std::endl;
+		std::cout << ADD_ITEM << ". Add item" << std::endl;
+		std::cout << REMOVE_ITEM << ". Remove item" << std::endl;
+		std::cout << SHOW_INVENTORY << ". Show inventory" << std::endl;
+		std::cout << EXIT << ". Exit" << std::endl;
+
+		int choice = InputPositiveNumber("\n> ", EXIT);
+		switch (choice)
+		{
+		case ADD_ITEM:
+		{
+			if (inventary.IsFull()) break;
+			std::string item;
+			std::cout << "> Enter item name: ";
+			std::cin >> item;
+			inventary.AddItem(item);
+			break;
 		}
-		else {
-			std::cout << "Character " << characters[i]->GetName() << " cannot attack." << std::endl;
+		case REMOVE_ITEM:
+		{
+			if (inventary.IsEmpty()) break;
+			std::string item;
+			std::cout << "> Enter item to remove: ";
+			std::cin >> item;
+			inventary.RemoveItem(item);
+			break;
 		}
-		delete characters[i];
+		case SHOW_INVENTORY:
+		{
+			if (inventary.IsEmpty()) break;
+			inventary.ShowInventory();
+			break;
+		}
+		case EXIT:
+		{
+			is_running = false;
+			break;
+		}
+		default:
+			std::cout << "[Error] Exiting the menu range." << std::endl;
+			break;
+		}
 	}
 	return 0;
 }
