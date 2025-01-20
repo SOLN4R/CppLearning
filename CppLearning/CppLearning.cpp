@@ -1,53 +1,64 @@
 ﻿/*
- *	 Map
+ *	 sort, find, for_each
  */
 
 #include <iostream>
-#include <map>
+#include <vector>
+#include <algorithm>
+#
 
-void ShowInventory(std::map<std::string, int>& inventory)
-{
-	std::cout << "\nInventory (" << inventory.size() << "):" << std::endl;
-	for (const auto& item : inventory)
-	{
-		std::cout << item.first << ": " << item.second << std::endl;
-	}
-}
-
-void DeleteItem(std::map<std::string, int>& inventory, const std::string& item)
-{
-	if (inventory.find(item) != inventory.end())
-	{
-		inventory.erase(item);
-		std::cout << "\n[Info] " << item << " deleted." << std::endl;
-	}
-	else
-	{
-		std::cout << "\n[Error] " << item << " not found in inventory." << std::endl;
-	}
-}
-
-void AddItem(std::map<std::string, int>& inventory, const std::string& item, int quantity)
-{
-	inventory[item] += quantity;
-	std::cout << "\n[Info] " << item << " added to inventory." << std::endl;
-}
+void PrintNumbers(std::vector<int>&);
+void SortingNumbers(std::vector<int>&, bool = false);
+void FindNumber(std::vector<int>&, int);
 
 int main()
 {
-	std::map<std::string, int> inventory; // item name & quantity
-	AddItem(inventory, "Health Potion", 2);
-	AddItem(inventory, "Mana Potion", 3);
-	AddItem(inventory, "Sword", 1);
-	AddItem(inventory, "Shield", 1);
-	AddItem(inventory, "Bow", 1);
-	AddItem(inventory, "Arrows", 8);
-	ShowInventory(inventory);
+	std::vector<int> numbers{ 0, 4, 2, 6, 1, 5, 8, 7, 9, 3 };
+	PrintNumbers(numbers);
+	
+	SortingNumbers(numbers);
+	PrintNumbers(numbers);
 
-	DeleteItem(inventory, "Bow");
-	DeleteItem(inventory, "Test");
-	AddItem(inventory, "Arrows", 4);
+	SortingNumbers(numbers, true);
+	PrintNumbers(numbers);
 
-	ShowInventory(inventory);
+	FindNumber(numbers, 5);
+	FindNumber(numbers, 18);
+
 	return 0;
+}
+
+void PrintNumbers(std::vector<int>& numbers)
+{
+	std::cout << "\nNumbers (" << numbers.size() << "):";
+	std::for_each(numbers.begin(), numbers.end(), [](int number)
+		{
+			std::cout << " " << number;
+		});
+
+	std::cout << std::endl;
+}
+
+void SortingNumbers(std::vector<int>& numbers, bool reverse)
+{
+	if (reverse)
+	{
+		std::cout << "\nReverse sorting..." << std::endl;
+		std::sort(numbers.begin(), numbers.end(), std::greater<int>());
+		return;
+	}
+	std::cout << "\nSorting..." << std::endl;
+	std::sort(begin(numbers), end(numbers));
+}
+
+void FindNumber(std::vector<int>& numbers, int find_number)
+{
+	auto it = std::find(numbers.begin(), numbers.end(), find_number);
+	std::cout << "\nFinding " << find_number << "..." << std::endl;
+	if (it != numbers.end())
+	{
+		std::cout << "\nFound: " << *it << std::endl;
+		return;
+	}
+	std::cout << "\nThe number " << find_number << " was not found" << std::endl;
 }
