@@ -1,64 +1,29 @@
 ﻿/*
- *	 sort, find, for_each
- */
+*  thread, mutex
+*/
 
 #include <iostream>
-#include <vector>
-#include <algorithm>
-#
+#include <thread>
+#include <mutex>
 
-void PrintNumbers(std::vector<int>&);
-void SortingNumbers(std::vector<int>&, bool = false);
-void FindNumber(std::vector<int>&, int);
+int counter = 0;
+std::mutex mtx;
 
-int main()
-{
-	std::vector<int> numbers{ 0, 4, 2, 6, 1, 5, 8, 7, 9, 3 };
-	PrintNumbers(numbers);
-	
-	SortingNumbers(numbers);
-	PrintNumbers(numbers);
-
-	SortingNumbers(numbers, true);
-	PrintNumbers(numbers);
-
-	FindNumber(numbers, 5);
-	FindNumber(numbers, 18);
-
-	return 0;
+void IncrementCounter(const std::string& threadName) {
+    for (int i = 0; i < 5; ++i) {
+        std::lock_guard<std::mutex> lock(mtx);
+        ++counter;
+        std::cout << threadName << " incremented counter to " << counter << std::endl;
+    }
 }
 
-void PrintNumbers(std::vector<int>& numbers)
-{
-	std::cout << "\nNumbers (" << numbers.size() << "):";
-	std::for_each(numbers.begin(), numbers.end(), [](int number)
-		{
-			std::cout << " " << number;
-		});
+int main() {
+    std::thread t1(IncrementCounter, "Thread 1");
+    std::thread t2(IncrementCounter, "Thread 2");
 
-	std::cout << std::endl;
-}
+    t1.join();
+    t2.join();
 
-void SortingNumbers(std::vector<int>& numbers, bool reverse)
-{
-	if (reverse)
-	{
-		std::cout << "\nReverse sorting..." << std::endl;
-		std::sort(numbers.begin(), numbers.end(), std::greater<int>());
-		return;
-	}
-	std::cout << "\nSorting..." << std::endl;
-	std::sort(begin(numbers), end(numbers));
-}
-
-void FindNumber(std::vector<int>& numbers, int find_number)
-{
-	auto it = std::find(numbers.begin(), numbers.end(), find_number);
-	std::cout << "\nFinding " << find_number << "..." << std::endl;
-	if (it != numbers.end())
-	{
-		std::cout << "\nFound: " << *it << std::endl;
-		return;
-	}
-	std::cout << "\nThe number " << find_number << " was not found" << std::endl;
+    std::cout << "Final counter value: " << counter << std::endl;
+    return 0;
 }
