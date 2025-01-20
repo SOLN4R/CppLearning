@@ -1,33 +1,53 @@
 ﻿/*
- *	Vector
+ *	 Map
  */
 
 #include <iostream>
-#include <vector>
+#include <map>
+
+void ShowInventory(std::map<std::string, int>& inventory)
+{
+	std::cout << "\nInventory (" << inventory.size() << "):" << std::endl;
+	for (const auto& item : inventory)
+	{
+		std::cout << item.first << ": " << item.second << std::endl;
+	}
+}
+
+void DeleteItem(std::map<std::string, int>& inventory, const std::string& item)
+{
+	if (inventory.find(item) != inventory.end())
+	{
+		inventory.erase(item);
+		std::cout << "\n[Info] " << item << " deleted." << std::endl;
+	}
+	else
+	{
+		std::cout << "\n[Error] " << item << " not found in inventory." << std::endl;
+	}
+}
+
+void AddItem(std::map<std::string, int>& inventory, const std::string& item, int quantity)
+{
+	inventory[item] += quantity;
+	std::cout << "\n[Info] " << item << " added to inventory." << std::endl;
+}
 
 int main()
 {
-	std::vector<int> vec;
-	vec.push_back(1);
-	vec.push_back(2);
-	vec.push_back(3);
-	std::cout << "Vector size: " << vec.size() << std::endl;
-	std::cout << "Vecto contains:";
-	for (auto it = vec.begin(); it != vec.end(); ++it)
-	{
-		std::cout << " " << *it;
-	}
+	std::map<std::string, int> inventory; // item name & quantity
+	AddItem(inventory, "Health Potion", 2);
+	AddItem(inventory, "Mana Potion", 3);
+	AddItem(inventory, "Sword", 1);
+	AddItem(inventory, "Shield", 1);
+	AddItem(inventory, "Bow", 1);
+	AddItem(inventory, "Arrows", 8);
+	ShowInventory(inventory);
 
-	std::cout << std::endl;
+	DeleteItem(inventory, "Bow");
+	DeleteItem(inventory, "Test");
+	AddItem(inventory, "Arrows", 4);
 
-	vec.pop_back();
-	
-	try {
-		std::cout << vec.at(2) << std::endl;
-	}
-	catch (const std::out_of_range& e) {
-		std::cout << e.what() << std::endl;
-	}
-	
+	ShowInventory(inventory);
 	return 0;
 }
